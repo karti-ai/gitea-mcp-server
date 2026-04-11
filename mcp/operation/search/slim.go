@@ -1,0 +1,88 @@
+package search
+
+import (
+	gitea_sdk "code.gitea.io/sdk/gitea"
+)
+
+func slimUserDetail(u *gitea_sdk.User) map[string]any {
+	if u == nil {
+		return nil
+	}
+	return map[string]any{
+		"id":         u.ID,
+		"login":      u.UserName,
+		"full_name":  u.FullName,
+		"email":      u.Email,
+		"avatar_url": u.AvatarURL,
+		"html_url":   u.HTMLURL,
+		"is_admin":   u.IsAdmin,
+	}
+}
+
+func slimUserDetails(users []*gitea_sdk.User) []map[string]any {
+	out := make([]map[string]any, 0, len(users))
+	for _, u := range users {
+		out = append(out, slimUserDetail(u))
+	}
+	return out
+}
+
+func slimTeam(t *gitea_sdk.Team) map[string]any {
+	if t == nil {
+		return nil
+	}
+	return map[string]any{
+		"id":          t.ID,
+		"name":        t.Name,
+		"description": t.Description,
+		"permission":  t.Permission,
+	}
+}
+
+func slimTeams(teams []*gitea_sdk.Team) []map[string]any {
+	out := make([]map[string]any, 0, len(teams))
+	for _, t := range teams {
+		out = append(out, slimTeam(t))
+	}
+	return out
+}
+
+func slimRepo(r *gitea_sdk.Repository) map[string]any {
+	if r == nil {
+		return nil
+	}
+	m := map[string]any{
+		"id":                r.ID,
+		"full_name":         r.FullName,
+		"description":       r.Description,
+		"html_url":          r.HTMLURL,
+		"clone_url":         r.CloneURL,
+		"ssh_url":           r.SSHURL,
+		"default_branch":    r.DefaultBranch,
+		"private":           r.Private,
+		"fork":              r.Fork,
+		"archived":          r.Archived,
+		"language":          r.Language,
+		"stars_count":       r.Stars,
+		"forks_count":       r.Forks,
+		"open_issues_count": r.OpenIssues,
+		"open_pr_counter":   r.OpenPulls,
+		"created_at":        r.Created,
+		"updated_at":        r.Updated,
+	}
+	if r.Owner != nil {
+		m["owner"] = r.Owner.UserName
+	}
+	if len(r.Topics) > 0 {
+		m["topics"] = r.Topics
+	}
+	return m
+}
+
+func slimRepos(repos []*gitea_sdk.Repository) []map[string]any {
+	out := make([]map[string]any, 0, len(repos))
+	for _, r := range repos {
+		out = append(out, slimRepo(r))
+	}
+	return out
+}
