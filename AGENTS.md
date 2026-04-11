@@ -5,7 +5,7 @@ This guide explains how to set up GitCoffee MCP with per-agent Gitea account iso
 ## Structure
 
 ```
-gitcoffee-mcp/
+gitea-mcp-mcp/
 ├── mcp/           # MCP server source code (Go)
 └── AGENTS.md      # This file - OpenClaw setup guide
 ```
@@ -39,7 +39,7 @@ The GitCoffee MCP server provides Gitea tools via the Model Context Protocol (MC
 ```bash
 cd mcp
 make build
-cp gitea-mcp ~/.bun/bin/gitcoffee-mcp
+cp gitea-mcp ~/.bun/bin/gitea-mcp-mcp
 ```
 
 ### Step 2: Run Multiple MCP Instances
@@ -48,10 +48,10 @@ Each agent needs its own MCP server instance with its own token:
 
 ```bash
 # Friday's MCP (runs on port 8081)
-gitcoffee-mcp --host https://gitea.example.com --port 8081 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp-mcp --host https://gitea.example.com --port 8081 --token <YOUR_GITEA_TOKEN> &
 
 # Karti's MCP (runs on port 8082)
-gitcoffee-mcp --host https://gitea.example.com --port 8082 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp-mcp --host https://gitea.example.com --port 8082 --token <YOUR_GITEA_TOKEN> &
 ```
 
 ### Step 3: Configure MCP Servers in OpenClaw
@@ -65,15 +65,15 @@ Add to `~/.openclaw/openclaw.json`:
       "acpx": {
         "config": {
           "mcpServers": {
-            "gitcoffee-friday": {
-              "command": "gitcoffee-mcp",
+            "gitea-mcp-friday": {
+              "command": "gitea-mcp-mcp",
               "args": ["--host", "https://gitea.example.com", "--port", "8081"],
               "env": {
                 "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>"
               }
             },
-            "gitcoffee-karti": {
-              "command": "gitcoffee-mcp",
+            "gitea-mcp-karti": {
+              "command": "gitea-mcp-mcp",
               "args": ["--host", "https://gitea.example.com", "--port", "8082"],
               "env": {
                 "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>"
@@ -101,8 +101,8 @@ The key for isolation is `tools.allow/deny` per agent. This guarantees each agen
         "agentDir": "~/.openclaw/agents/friday/agent",
         "workspace": "/Users/karti/.openclaw/agents/friday/workspace",
         "tools": {
-          "allow": ["gitcoffee-friday:*", "group:fs", "group:runtime"],
-          "deny": ["gitcoffee-karti:*"]
+          "allow": ["gitea-mcp-friday:*", "group:fs", "group:runtime"],
+          "deny": ["gitea-mcp-karti:*"]
         }
       },
       {
@@ -111,8 +111,8 @@ The key for isolation is `tools.allow/deny` per agent. This guarantees each agen
         "agentDir": "~/.openclaw/agents/karti/agent",
         "workspace": "/Users/karti/.openclaw/agents/karti/workspace",
         "tools": {
-          "allow": ["gitcoffee-karti:*", "group:fs", "group:runtime"],
-          "deny": ["gitcoffee-friday:*"]
+          "allow": ["gitea-mcp-karti:*", "group:fs", "group:runtime"],
+          "deny": ["gitea-mcp-friday:*"]
         }
       }
     ]
@@ -123,7 +123,7 @@ The key for isolation is `tools.allow/deny` per agent. This guarantees each agen
 **Key Points:**
 - `allow`: What tools the agent CAN use
 - `deny`: What tools the agent CANNOT see/use
-- `gitcoffee-*:*` means all tools from that MCP server
+- `gitea-mcp-*:*` means all tools from that MCP server
 - `group:fs`, `group:runtime` are built-in tool groups
 
 ### Step 5: Add Agent Instructions (AGENTS.md per agent)
@@ -134,20 +134,20 @@ Create per-agent AGENTS.md to enforce behavior:
 ```markdown
 # Friday Agent
 
-You are the Friday Agent. You only have access to the gitcoffee-friday MCP server.
+You are the Friday Agent. You only have access to the gitea-mcp-friday MCP server.
 
-When performing Git operations, use only the gitcoffee-friday tools.
-Never attempt to use gitcoffee-karti or any other Gitea MCP server.
+When performing Git operations, use only the gitea-mcp-friday tools.
+Never attempt to use gitea-mcp-karti or any other Gitea MCP server.
 ```
 
 **Karti's workspace** (`~/.openclaw/agents/karti/workspace/AGENTS.md`):
 ```markdown
 # Karti Agent
 
-You are the Karti Agent. You only have access to the gitcoffee-karti MCP server.
+You are the Karti Agent. You only have access to the gitea-mcp-karti MCP server.
 
-When performing Git operations, use only the gitcoffee-karti tools.
-Never attempt to use gitcoffee-friday or any other Gitea MCP server.
+When performing Git operations, use only the gitea-mcp-karti tools.
+Never attempt to use gitea-mcp-friday or any other Gitea MCP server.
 ```
 
 ## Available MCP Tools
@@ -179,10 +179,10 @@ Each MCP server provides these tools (prefixed with server name):
 Test with TUI for each agent:
 
 ```bash
-# Test Friday (should only see gitcoffee-friday tools)
+# Test Friday (should only see gitea-mcp-friday tools)
 openclaw tui --session friday --message "list available gitea tools"
 
-# Test Karti (should only see gitcoffee-karti tools)
+# Test Karti (should only see gitea-mcp-karti tools)
 openclaw tui --session karti --message "list available gitea tools"
 ```
 
@@ -192,13 +192,13 @@ To add a new agent (e.g., "edith"):
 
 1. Run a new MCP instance:
 ```bash
-gitcoffee-mcp --host https://gitea.example.com --port 8083 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp-mcp --host https://gitea.example.com --port 8083 --token <YOUR_GITEA_TOKEN> &
 ```
 
 2. Add to mcpServers in openclaw.json:
 ```json
-"gitcoffee-edith": {
-  "command": "gitcoffee-mcp",
+"gitea-mcp-edith": {
+  "command": "gitea-mcp-mcp",
   "args": ["--host", "https://gitea.example.com", "--port", "8083"],
   "env": { "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>" }
 }
@@ -210,8 +210,8 @@ gitcoffee-mcp --host https://gitea.example.com --port 8083 --token <YOUR_GITEA_T
   "id": "edith",
   "name": "Edith Agent",
   "tools": {
-    "allow": ["gitcoffee-edith:*", "group:fs", "group:runtime"],
-    "deny": ["gitcoffee-friday:*", "gitcoffee-karti:*"]
+    "allow": ["gitea-mcp-edith:*", "group:fs", "group:runtime"],
+    "deny": ["gitea-mcp-friday:*", "gitea-mcp-karti:*"]
   }
 }
 ```

@@ -188,7 +188,7 @@ func TestErrorTranslation_CreateCommitStatus(t *testing.T) {
 			translated := gitea_errors.TranslateError(err, map[string]string{
 				"operation": "CreateCommitStatus",
 				"owner":     "karti-ai",
-				"repo":      "gitcoffee",
+				"repo":      "gitea-mcp",
 				"sha":       "248ade7a9c...",
 				"state":     "success",
 				"context":   "ci/metal",
