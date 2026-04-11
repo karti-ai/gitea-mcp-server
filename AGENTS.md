@@ -1,18 +1,18 @@
-# GitCoffee MCP Setup for OpenClaw
+# Gitea MCP Setup for OpenClaw
 
-This guide explains how to set up GitCoffee MCP with per-agent Gitea account isolation in OpenClaw.
+This guide explains how to set up Gitea MCP with per-agent Gitea account isolation in OpenClaw.
 
 ## Structure
 
 ```
-gitea-mcp-mcp/
+gitea-mcp/
 ├── mcp/           # MCP server source code (Go)
 └── AGENTS.md      # This file - OpenClaw setup guide
 ```
 
 ## Architecture Overview
 
-The GitCoffee MCP server provides Gitea tools via the Model Context Protocol (MCP). Each MCP instance uses a single Gitea token, making it ideal for per-agent isolation.
+The Gitea MCP server provides Gitea tools via the Model Context Protocol (MCP). Each MCP instance uses a single Gitea token, making it ideal for per-agent isolation.
 
 **Key Features:**
 - stdio mode (default): For local MCP clients
@@ -39,7 +39,7 @@ The GitCoffee MCP server provides Gitea tools via the Model Context Protocol (MC
 ```bash
 cd mcp
 make build
-cp gitea-mcp ~/.bun/bin/gitea-mcp-mcp
+cp gitea-mcp ~/.bun/bin/gitea-mcp
 ```
 
 ### Step 2: Run Multiple MCP Instances
@@ -48,10 +48,10 @@ Each agent needs its own MCP server instance with its own token:
 
 ```bash
 # Friday's MCP (runs on port 8081)
-gitea-mcp-mcp --host https://gitea.example.com --port 8081 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp --host https://gitea.example.com --port 8081 --token <YOUR_GITEA_TOKEN> &
 
 # Karti's MCP (runs on port 8082)
-gitea-mcp-mcp --host https://gitea.example.com --port 8082 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp --host https://gitea.example.com --port 8082 --token <YOUR_GITEA_TOKEN> &
 ```
 
 ### Step 3: Configure MCP Servers in OpenClaw
@@ -66,14 +66,14 @@ Add to `~/.openclaw/openclaw.json`:
         "config": {
           "mcpServers": {
             "gitea-mcp-friday": {
-              "command": "gitea-mcp-mcp",
+              "command": "gitea-mcp",
               "args": ["--host", "https://gitea.example.com", "--port", "8081"],
               "env": {
                 "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>"
               }
             },
             "gitea-mcp-karti": {
-              "command": "gitea-mcp-mcp",
+              "command": "gitea-mcp",
               "args": ["--host", "https://gitea.example.com", "--port", "8082"],
               "env": {
                 "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>"
@@ -192,13 +192,13 @@ To add a new agent (e.g., "edith"):
 
 1. Run a new MCP instance:
 ```bash
-gitea-mcp-mcp --host https://gitea.example.com --port 8083 --token <YOUR_GITEA_TOKEN> &
+gitea-mcp --host https://gitea.example.com --port 8083 --token <YOUR_GITEA_TOKEN> &
 ```
 
 2. Add to mcpServers in openclaw.json:
 ```json
 "gitea-mcp-edith": {
-  "command": "gitea-mcp-mcp",
+  "command": "gitea-mcp",
   "args": ["--host", "https://gitea.example.com", "--port", "8083"],
   "env": { "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_TOKEN>" }
 }

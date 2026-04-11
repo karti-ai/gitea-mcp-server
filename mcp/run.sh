@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BINARY_DIR="${HOME}/.cache/gitea-mcp-mcp"
+BINARY_DIR="${HOME}/.cache/gitea-mcp"
 BINARY="$BINARY_DIR/gitea-mcp"
 
 mkdir -p "$BINARY_DIR"
