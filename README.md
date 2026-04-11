@@ -44,8 +44,6 @@ gitea-mcp --host https://gitea.example.com --token YOUR_TOKEN --port 8080
 - **[Full Documentation](mcp/README.md)** - Complete usage guide, all 50+ tools, examples
 - **[Building Guide](mcp/BUILDING.md)** - Windows build instructions
 - **[Agent Setup](AGENTS.md)** - OpenClaw integration with per-agent isolation
-- **[Chinese Docs](mcp/README.zh-cn.md)** - 简体中文文档
-- **[Chinese (Traditional)](mcp/README.zh-tw.md)** - 繁體中文文件
 
 ## Project Structure
 
